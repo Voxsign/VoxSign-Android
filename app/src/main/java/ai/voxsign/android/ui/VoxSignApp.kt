@@ -1,5 +1,6 @@
 package ai.voxsign.android.ui
 
+import ai.voxsign.android.R
 import ai.voxsign.android.data.ConnState
 import ai.voxsign.android.session.AppViewModel
 import androidx.compose.animation.AnimatedVisibility
@@ -44,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,7 +65,7 @@ fun VoxSignApp(vm: AppViewModel) {
                 },
                 navigationIcon = {
                     IconButton(onClick = { drawerOpen = true }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Sessions")
+                        Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.sessions_menu_description))
                     }
                 }
             )
@@ -107,9 +109,9 @@ private fun MachineStatusHeader(vm: AppViewModel, onClick: () -> Unit) {
         Spacer(Modifier.width(6.dp))
         Text(
             when (conn) {
-                ConnState.ONLINE -> "Connected"
-                ConnState.OFFLINE -> "Offline"
-                ConnState.UNKNOWN -> "Checking…"
+                ConnState.ONLINE -> stringResource(R.string.status_connected)
+                ConnState.OFFLINE -> stringResource(R.string.status_offline)
+                ConnState.UNKNOWN -> stringResource(R.string.status_checking)
             },
             fontSize = 11.sp,
             color = Color(0xFF8A8A8E)
@@ -128,7 +130,7 @@ private fun MachinePickerSheet(vm: AppViewModel, onDismiss: () -> Unit) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 24.dp)) {
             Text(
-                "Choose machine",
+                stringResource(R.string.choose_machine),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(16.dp, 8.dp)
@@ -152,7 +154,7 @@ private fun MachinePickerSheet(vm: AppViewModel, onDismiss: () -> Unit) {
                         Text(m.baseUrl, fontSize = 11.sp, color = Color(0xFF8A8A8E))
                     }
                     if (m.id == currentId && conn == ConnState.ONLINE) {
-                        Icon(Icons.Default.Check, contentDescription = "Selected", tint = Color(0xFF5B8DEF))
+                        Icon(Icons.Default.Check, contentDescription = stringResource(R.string.selected), tint = Color(0xFF5B8DEF))
                     }
                 }
             }

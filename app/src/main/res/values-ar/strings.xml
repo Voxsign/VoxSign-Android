@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">VoxSign</string>
+
+    <!-- Top bar -->
+    <string name="sessions_menu_description">الجلسات</string>
+    <string name="status_connected">متصل</string>
+    <string name="status_offline">غير متصل</string>
+    <string name="status_checking">جارٍ الفحص…</string>
+
+    <!-- Machine picker bottom sheet -->
+    <string name="choose_machine">اختر الجهاز</string>
+    <string name="selected">محدد</string>
+
+    <!-- Chat screen -->
+    <string name="start_conversation">ابدأ محادثة</string>
+    <string name="voice_duration">🎙 %1$d ث</string>
+    <string name="offline_hint">الجهاز غير متصل · اضغط على اسم الجهاز أعلاه للتبديل</string>
+
+    <!-- Input bar -->
+    <string name="hold_to_talk">🎤 اضغط وتحدث</string>
+    <string name="message_placeholder">رسالة أو أمر صوتي…</string>
+    <string name="send">إرسال</string>
+    <string name="toggle_keyboard">تبديل لوحة المفاتيح</string>
+    <string name="release_to_cancel">أفلت للإلغاء</string>
+    <string name="release_to_send_slide_up">أفلت للإرسال · اسحب لأسفل للإلغاء</string>
+
+    <!-- Session drawer -->
+    <string name="close">إغلاق</string>
+    <string name="sessions_title">الجلسات</string>
+    <string name="new_session">جلسة جديدة</string>
+    <string name="no_sessions">لا توجد جلسات بعد</string>
+    <string name="no_sessions_hint">اضغط على + في الأعلى لبدء محادثة جديدة</string>
+    <string name="new_chat">محادثة جديدة</string>
+    <string name="delete">حذف</string>
+</resources>

@@ -1,4 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">声签</string>
+
+    <!-- Top bar -->
+    <string name="sessions_menu_description">会话</string>
+    <string name="status_connected">已连接</string>
+    <string name="status_offline">离线</string>
+    <string name="status_checking">检测中…</string>
+
+    <!-- Machine picker bottom sheet -->
+    <string name="choose_machine">选择设备</string>
+    <string name="selected">已选择</string>
+
+    <!-- Chat screen -->
+    <string name="start_conversation">开始对话</string>
+    <string name="voice_duration">🎙 %1$d秒</string>
+    <string name="offline_hint">离线 · 点击上方设备名切换</string>
+
+    <!-- Input bar -->
+    <string name="hold_to_talk">🎤 按住说话</string>
+    <string name="message_placeholder">输入消息或语音指令…</string>
+    <string name="send">发送</string>
+    <string name="toggle_keyboard">切换键盘</string>
+    <string name="release_to_cancel">松开取消</string>
+    <string name="release_to_send_slide_up">松开发送 · 上滑取消</string>
+
+    <!-- Session drawer -->
+    <string name="close">关闭</string>
+    <string name="sessions_title">会话</string>
+    <string name="new_session">新会话</string>
+    <string name="no_sessions">暂无会话</string>
+    <string name="no_sessions_hint">点击右上角 + 开始新对话</string>
+    <string name="new_chat">新对话</string>
+    <string name="delete">删除</string>
 </resources>

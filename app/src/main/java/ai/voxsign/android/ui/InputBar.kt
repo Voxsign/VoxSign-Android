@@ -1,5 +1,6 @@
 package ai.voxsign.android.ui
 
+import ai.voxsign.android.R
 import ai.voxsign.android.session.AppViewModel
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -44,6 +45,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -53,7 +57,8 @@ import kotlin.math.sin
  * Doubao-style bottom input bar.
  *  - Default: big dark "Hold to talk" capsule (56dp).
  *  - Press & hold -> full-width waveform overlay (red animated bars) + semi-transparent scrim.
- *  - Release -> sends a canned voice transcript; slide up far enough -> cancels (does not send).
+ *  - Release -> sends a canned voice transcript; slide far enough in the cancel direction -> cancels.
+ *    In LTR the cancel gesture is slide-up; per DESIGN.md §9.3 it mirrors to slide-down in RTL.
  *  - Tap the keyboard circle -> text-input mode with a send arrow.
  */
 @Composable
@@ -62,6 +67,7 @@ fun InputBar(vm: AppViewModel) {
     var recording by remember { mutableStateOf(false) }
     var cancelling by remember { mutableStateOf(false) }
     val input by vm.inputText.collectAsState()
+    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
     Column(Modifier.fillMaxWidth().background(Color(0xFFF2F2F4))) {
         // Recording overlay: waveform + caption
@@ -78,7 +84,7 @@ fun InputBar(vm: AppViewModel) {
                 TextField(
                     value = input,
                     onValueChange = { vm.onInputChange(it) },
-                    placeholder = { Text("Message or voice command…", fontSize = 15.sp) },
+                    placeholder = { Text(stringResource(R.string.message_placeholder), fontSize = 15.sp) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(18.dp),
                     colors = TextFieldDefaults.colors(
@@ -89,7 +95,7 @@ fun InputBar(vm: AppViewModel) {
                     )
                 )
                 IconButton(onClick = { vm.sendText() }, enabled = input.isNotBlank()) {
-                    Icon(Icons.Default.ArrowUpward, contentDescription = "Send", tint = Color(0xFF5B8DEF))
+                    Icon(Icons.Default.ArrowUpward, contentDescription = stringResource(R.string.send), tint = Color(0xFF5B8DEF))
                 }
             } else {
                 // Big hold-to-talk capsule
@@ -119,8 +125,15 @@ fun InputBar(vm: AppViewModel) {
                                 },
                                 onDrag = { change, dragAmount ->
                                     change.consume()
-                                    // Slide up past threshold -> cancel
-                                    if (dragAmount.y < -4f) cancelling = true
+                                    // Cancel gesture direction mirrors in RTL:
+                                    //   LTR: slide up (negative Y) past threshold -> cancel
+                                    //   RTL: slide down (positive Y) past threshold -> cancel
+                                    val shouldCancel = if (isRtl) {
+                                        dragAmount.y > 4f
+                                    } else {
+                                        dragAmount.y < -4f
+                                    }
+                                    if (shouldCancel) cancelling = true
                                 }
                             )
                         }
@@ -141,13 +154,13 @@ fun InputBar(vm: AppViewModel) {
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("🎤 Hold to talk", color = Color.White, fontSize = 17.sp)
+                    Text(stringResource(R.string.hold_to_talk), color = Color.White, fontSize = 17.sp)
                 }
             }
 
             // Keyboard toggle
             CircleIconButton(onClick = { textMode = !textMode }) {
-                Icon(Icons.Default.Keyboard, contentDescription = "Toggle keyboard", tint = Color(0xFF8A8A8E))
+                Icon(Icons.Default.Keyboard, contentDescription = stringResource(R.string.toggle_keyboard), tint = Color(0xFF8A8A8E))
             }
         }
     }
@@ -165,7 +178,11 @@ private fun CircleIconButton(onClick: () -> Unit, content: @Composable () -> Uni
     ) { content() }
 }
 
-/** Full-width held-state overlay: animated red bars + caption. Semi-transparent scrim. */
+/**
+ * Full-width held-state overlay: animated red bars + caption. Semi-transparent scrim.
+ * The Row automatically mirrors in RTL, so the waveform fills from the leading edge
+ * (right side in RTL) per DESIGN.md §9.3.
+ */
 @Composable
 private fun RecordingOverlay(cancelling: Boolean) {
     val transition = rememberInfiniteTransition()
@@ -200,7 +217,8 @@ private fun RecordingOverlay(cancelling: Boolean) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            if (cancelling) "Release to cancel" else "Release to send · Slide up to cancel",
+            if (cancelling) stringResource(R.string.release_to_cancel)
+            else stringResource(R.string.release_to_send_slide_up),
             color = Color(0xFFFF3B30),
             fontSize = 14.sp
         )

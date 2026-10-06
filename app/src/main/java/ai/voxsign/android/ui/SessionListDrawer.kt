@@ -1,6 +1,8 @@
 package ai.voxsign.android.ui
 
+import ai.voxsign.android.R
 import ai.voxsign.android.data.ChatSession
+import ai.voxsign.android.data.SessionDefaults
 import ai.voxsign.android.session.AppViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,9 +45,13 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Doubao-style left slide-out session drawer.
+ * Slide-out session drawer.
  * Lists sessions sorted by updatedAt descending; tap to switch; "New" creates a session titled
  * "New Chat"; trash deletes (silently ignored when only one remains).
+ *
+ * RTL behavior (DESIGN.md §9.3): the panel slides from the right in ar locale. This is achieved
+ * automatically because the Box defaults to TopStart alignment — in RTL, Start = right.
+ * The header Row also auto-mirrors: Close lands on the screen-edge side, Add on the inner side.
  */
 @Composable
 fun SessionListDrawer(vm: AppViewModel, onClose: () -> Unit) {
@@ -60,7 +67,7 @@ fun SessionListDrawer(vm: AppViewModel, onClose: () -> Unit) {
                 .background(Color.Black.copy(alpha = 0.25f))
                 .clickable { onClose() }
         )
-        // Panel
+        // Panel — aligned to TopStart (left in LTR, right in RTL) automatically.
         Column(
             Modifier
                 .width(300.dp)
@@ -74,13 +81,13 @@ fun SessionListDrawer(vm: AppViewModel, onClose: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onClose) {
-                    Icon(Icons.Default.Close, contentDescription = "Close")
+                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
                 }
                 Spacer(Modifier.weight(1f))
-                Text("Sessions", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Text(stringResource(R.string.sessions_title), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = { vm.newSession(); onClose() }) {
-                    Icon(Icons.Default.Add, contentDescription = "New session")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.new_session))
                 }
             }
             HorizontalDivider()
@@ -101,9 +108,9 @@ fun SessionListDrawer(vm: AppViewModel, onClose: () -> Unit) {
                                 .padding(40.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text("No sessions yet", color = Color(0xFF8A8A8E), fontSize = 14.sp)
+                            Text(stringResource(R.string.no_sessions), color = Color(0xFF8A8A8E), fontSize = 14.sp)
                             Text(
-                                "Tap + in the top-right to start a new chat",
+                                stringResource(R.string.no_sessions_hint),
                                 color = Color(0xFFAEAEB2),
                                 fontSize = 12.sp
                             )
@@ -132,8 +139,14 @@ private fun SessionRow(session: ChatSession, isCurrent: Boolean, onTap: () -> Un
         )
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
+            // Localize the default "New Chat" sentinel; real titles are stored verbatim.
+            val displayTitle = if (session.title == SessionDefaults.NEW_CHAT_TITLE || session.title.isEmpty()) {
+                stringResource(R.string.new_chat)
+            } else {
+                session.title
+            }
             Text(
-                if (session.title.isEmpty()) "New Chat" else session.title,
+                displayTitle,
                 fontSize = 15.sp,
                 fontWeight = if (isCurrent) FontWeight.SemiBold else FontWeight.Normal,
                 maxLines = 1
@@ -141,12 +154,13 @@ private fun SessionRow(session: ChatSession, isCurrent: Boolean, onTap: () -> Un
             Text(relativeTime(session.updatedAt), fontSize = 11.sp, color = Color(0xFF8A8A8E))
         }
         IconButton(onClick = onDelete) {
-            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFC7C7CC))
+            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete), tint = Color(0xFFC7C7CC))
         }
     }
 }
 
 private fun relativeTime(ts: Long): String {
+    // Western digits by default (DESIGN.md §9.2); use system locale for date formatting.
     val f = SimpleDateFormat("MM-dd HH:mm", Locale.US)
     return f.format(Date(ts))
 }

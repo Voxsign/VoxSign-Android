@@ -1,5 +1,6 @@
 package ai.voxsign.android.ui
 
+import ai.voxsign.android.R
 import ai.voxsign.android.data.ConnState
 import ai.voxsign.android.data.StoredMessage
 import ai.voxsign.android.session.AppViewModel
@@ -30,6 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -61,7 +65,7 @@ fun ChatScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
             if (msgs.isEmpty()) {
                 item {
                     Box(Modifier.fillMaxWidth().padding(top = 80.dp), contentAlignment = Alignment.Center) {
-                        Text("Start a conversation", color = Color(0xFFAEAEB2), fontSize = 14.sp)
+                        Text(stringResource(R.string.start_conversation), color = Color(0xFFAEAEB2), fontSize = 14.sp)
                     }
                 }
             }
@@ -76,17 +80,28 @@ fun ChatScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
     }
 }
 
-/** One chat bubble: user right-aligned (dark), harness left-aligned (light gray). */
+/**
+ * One chat bubble: user right-aligned (dark), harness left-aligned (light gray).
+ * Per DESIGN.md §9.3, user bubbles stay on the physical right and assistant bubbles
+ * on the physical left in both LTR and RTL — we swap start/end based on layout direction
+ * so the physical sides are preserved.
+ */
 @Composable
 private fun MessageBubble(m: StoredMessage) {
     val isUser = m.role == "user"
+    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    // User always on the physical right, assistant always on the physical left.
+    // In LTR: right = End, left = Start. In RTL: right = Start, left = End.
+    val arrangement = when {
+        isUser && !isRtl -> Arrangement.End
+        isUser && isRtl -> Arrangement.Start
+        !isUser && !isRtl -> Arrangement.Start
+        else -> Arrangement.End
+    }
     Row(
         Modifier.fillMaxWidth().padding(vertical = 2.dp),
-        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+        horizontalArrangement = arrangement
     ) {
-        if (!isUser) {
-            Box(Modifier.width(6.dp))
-        }
         Column(
             Modifier
                 .widthIn(max = 280.dp)
@@ -101,7 +116,7 @@ private fun MessageBubble(m: StoredMessage) {
             )
             if (m.fromVoice && m.voiceSeconds != null) {
                 Text(
-                    "🎙 ${m.voiceSeconds}s",
+                    stringResource(R.string.voice_duration, m.voiceSeconds),
                     fontSize = 11.sp,
                     color = if (isUser) Color.White.copy(alpha = 0.7f) else Color(0xFF8A8A8E)
                 )
@@ -121,6 +136,6 @@ private fun OfflineBar() {
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text("Offline · tap the machine name above to switch", color = Color(0xFF8A8A8E), fontSize = 14.sp)
+        Text(stringResource(R.string.offline_hint), color = Color(0xFF8A8A8E), fontSize = 14.sp)
     }
 }

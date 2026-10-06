@@ -1,4 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VoxSign</string>
+
+    <!-- Top bar -->
+    <string name="sessions_menu_description">Sessions</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_checking">Checking…</string>
+
+    <!-- Machine picker bottom sheet -->
+    <string name="choose_machine">Choose machine</string>
+    <string name="selected">Selected</string>
+
+    <!-- Chat screen -->
+    <string name="start_conversation">Start a conversation</string>
+    <string name="voice_duration">🎙 %1$ds</string>
+    <string name="offline_hint">Offline · tap the machine name above to switch</string>
+
+    <!-- Input bar -->
+    <string name="hold_to_talk">🎤 Hold to talk</string>
+    <string name="message_placeholder">Message or voice command…</string>
+    <string name="send">Send</string>
+    <string name="toggle_keyboard">Toggle keyboard</string>
+    <string name="release_to_cancel">Release to cancel</string>
+    <string name="release_to_send_slide_up">Release to send · Slide up to cancel</string>
+
+    <!-- Session drawer -->
+    <string name="close">Close</string>
+    <string name="sessions_title">Sessions</string>
+    <string name="new_session">New session</string>
+    <string name="no_sessions">No sessions yet</string>
+    <string name="no_sessions_hint">Tap + in the top-right to start a new chat</string>
+    <string name="new_chat">New Chat</string>
+    <string name="delete">Delete</string>
 </resources>
