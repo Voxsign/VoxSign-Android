@@ -1,0 +1,51 @@
+package ai.voxsign.android.data
+
+/**
+ * Core value types for VoxSign-Android. Mirrors the iOS client's
+ * `Core/Models.swift` (ChatSession / StoredMessage) closely enough that behaviour
+ * (session auto-naming, bubble list, machine status) is aligned.
+ */
+
+/** A chat message (user bubble or harness reply). */
+data class StoredMessage(
+    val id: String,
+    val role: String,          // "user" | "harness"
+    val text: String,
+    val fromVoice: Boolean = false,
+    val voiceSeconds: Int? = null,
+    val timestamp: Long = System.currentTimeMillis()
+)
+
+/** A local conversation. Title starts as "New Chat" and is auto-named from the first message. */
+data class ChatSession(
+    val id: String,
+    val title: String,
+    val createdAt: Long,
+    val updatedAt: Long,
+    val messages: List<StoredMessage> = emptyList()
+)
+
+/** A selectable backend machine. Default is the zero-config cloud. */
+data class Machine(
+    val id: String,
+    val name: String,
+    val baseUrl: String,
+    val isCloud: Boolean = false
+)
+
+/** Connection state for the top-bar status dot. */
+enum class ConnState {
+    ONLINE,      // green
+    OFFLINE,     // red
+    UNKNOWN      // gray (checking)
+}
+
+object SessionDefaults {
+    const val NEW_CHAT_TITLE = "New Chat"
+    val DEFAULT_MACHINE = Machine(
+        id = "cloud",
+        name = "VoxSign Cloud",
+        baseUrl = "https://cloud.voxsign.ai",
+        isCloud = true
+    )
+}
